@@ -187,6 +187,7 @@ detections.npz           per-frame boxes and the homography for each step
 labels.json              submission file
 models/yolo11l-visdrone.pt
 note.txt                 judgement calls from the annotation pass
+PROJECT.md               full record of the clip, the rules, and every setting
 requirements.txt
 ```
 
