@@ -223,6 +223,27 @@ On the machine this was built on, detection of all 1,199 frames took about 13 mi
 
 **Small objects stay if they persist.** A box that shows up once is dropped. A small pedestrian or bike that the detector holds for several frames is kept. Distant objects are part of the task, not optional.
 
+## Settings recorded in the script
+
+| Step | Setting |
+|---|---|
+| Detector input | `imgsz` 1920. The JPEG files stay 3840 × 2160. |
+| Stored detections | confidence at least 0.15, then NMS |
+| Boxes allowed into tracking | person ≥ 0.18, four-wheel ≥ 0.20, two-wheel ≥ 0.22 |
+| First match pass | confidence ≥ 0.34 |
+| New id | person 0.27 (0.22 on the border), two-wheel 0.30 (0.25 on the border), other vehicles 0.26 (0.22 on the border) |
+| Hidden, still inside the image | same id for up to 48 frames (0.8 s), no box written |
+| Touching the border and missed | same id for up to 8 frames, then the id ends |
+| Mostly outside the image | id ends. Under about 28% of the box still inside counts as gone. |
+| Straight-line fill | only gaps of 1 to 8 frames |
+| Filled box almost fully covered | that frame is left empty (cover about 65% or more) |
+| Occlusion 0 / 1 / 2 | overlap under about 18%, up to about half, more than half |
+| Camera motion | optical flow, points inside detections removed |
+
+No second model was used. No mAP was computed. The labels were not drawn box by box in CVAT. The assignment mentioned CVAT as one tool that can export tracks. This pass is the script above.
+
 ## What is still rough
 
 Cement mixers and the tanker have looser boxes than the cars. In the dense queue two boxes sometimes touch. Occlusion is estimated from overlap, and a partly hidden box is not expanded to a hand-drawn full extent. A few dark poles and rooftop shapes can still hold a person or bike id when the detector is steady on them. Those calls are written up in `note.txt`.
+
+A later pass could check more random frames by eye, run detection at a larger size or on tiles for distant bikes and people, and decide the unclear rider cases from a crop. A match that is still doubtful should stay a new id.
